@@ -66,7 +66,7 @@ export default async function FAQsPage({
           <div className="mt-16 text-center bg-card border border-border rounded-2xl p-8">
             <h3 className="text-2xl font-bold mb-3">Still Have Questions?</h3>
             <p className="text-muted-foreground mb-6">
-              Can't find the answer you're looking for? Contact our customer support team.
+              Can&apos;t find the answer you&apos;re looking for? Contact our customer support team.
             </p>
             <a
               href={`/${params.company}/contact`}

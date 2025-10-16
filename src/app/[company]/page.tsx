@@ -3,6 +3,7 @@ import { ProductCard } from '@/components/catalog/ProductCard';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { Package, Shield, Zap, Star, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function CompanyHomePage({
   params,
@@ -104,7 +105,7 @@ export default async function CompanyHomePage({
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Why Choose {company.name}?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            We're committed to providing the best products and service
+            We&apos;re committed to providing the best products and service
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
@@ -191,10 +192,12 @@ export default async function CompanyHomePage({
                 <div key={testimonial.id} className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-4 mb-4">
                     {testimonial.imageUrl && (
-                      <img
+                      <Image
                         src={testimonial.imageUrl}
                         alt={testimonial.name}
-                        className="w-12 h-12 rounded-full object-cover"
+                        width={48}
+                        height={48}
+                        className="rounded-full object-cover"
                       />
                     )}
                     <div>

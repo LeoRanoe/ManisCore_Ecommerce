@@ -4,22 +4,35 @@ import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { Package, Shield, Zap, Star, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
+
+// Enable dynamic params to allow runtime generation of pages
+export const dynamicParams = true;
+
+// Revalidate every 60 seconds
+export const revalidate = 60;
 
 export default async function CompanyHomePage({
   params,
 }: {
   params: { company: string };
 }) {
-  const company = await api.getCompany(params.company);
-  const { data: featuredProducts, pagination } = await api.getProducts(params.company, 1, 8, { isFeatured: true });
-  const { data: testimonials } = await api.getTestimonials(params.company, true);
-  const { data: banners } = await api.getBanners(params.company, 'hero');
+  try {
+    const company = await api.getCompany(params.company);
+    const { data: featuredProducts, pagination } = await api.getProducts(params.company, 1, 8, { isFeatured: true });
+    const { data: testimonials } = await api.getTestimonials(params.company, true);
+    const { data: banners } = await api.getBanners(params.company, 'hero');
+  
+    // If company doesn't exist, show 404
+    if (!company) {
+      notFound();
+    }
 
-  // Use custom hero text or fall back to defaults
-  const heroTitle = company.heroTitle || `Welcome to ${company.name}`;
-  const heroSubtitle = company.heroSubtitle || company.description || `Discover quality products at ${company.name}`;
+    // Use custom hero text or fall back to defaults
+    const heroTitle = company.heroTitle || `Welcome to ${company.name}`;
+    const heroSubtitle = company.heroSubtitle || company.description || `Discover quality products at ${company.name}`;
 
-  return (
+    return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden">
@@ -251,5 +264,9 @@ export default async function CompanyHomePage({
         </div>
       </section>
     </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error loading company page:', params.company, error);
+    notFound();
+  }
 }

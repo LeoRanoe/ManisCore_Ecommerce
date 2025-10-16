@@ -117,18 +117,32 @@ class DashboardAPI {
   }
 
   async getCompany(slug: string): Promise<Company> {
-    const res = await fetch(`${this.baseURL}/api/public/companies/${slug}`, {
-      next: { revalidate: 60 } as any,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'force-cache'
-    });
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({ error: 'Company not found' }));
-      throw new Error(error.error || 'Company not found');
+    try {
+      const url = `${this.baseURL}/api/public/companies/${slug}`;
+      console.log('[API] Fetching company:', url);
+      
+      const res = await fetch(url, {
+        next: { revalidate: 60 } as any,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'force-cache'
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[API] Company fetch failed:', res.status, errorText);
+        const error = errorText ? JSON.parse(errorText) : { error: 'Company not found' };
+        throw new Error(error.error || `Company not found (${res.status})`);
+      }
+      
+      const data = await res.json();
+      console.log('[API] Company fetched successfully:', data.name);
+      return data;
+    } catch (error) {
+      console.error('[API] Error fetching company:', slug, error);
+      throw error;
     }
-    return res.json();
   }
 
   async getProducts(
@@ -137,27 +151,41 @@ class DashboardAPI {
     limit = 20,
     filters: { search?: string; tags?: string[]; isFeatured?: boolean } = {}
   ): Promise<PaginatedResponse<Product>> {
-    const params = new URLSearchParams({
-      companySlug,
-      page: String(page),
-      limit: String(limit),
-      ...(filters.search && { search: filters.search }),
-      ...(filters.tags && { tags: filters.tags.join(',') }),
-      ...(filters.isFeatured !== undefined && { isFeatured: String(filters.isFeatured) })
-    });
+    try {
+      const params = new URLSearchParams({
+        companySlug,
+        page: String(page),
+        limit: String(limit),
+        ...(filters.search && { search: filters.search }),
+        ...(filters.tags && { tags: filters.tags.join(',') }),
+        ...(filters.isFeatured !== undefined && { isFeatured: String(filters.isFeatured) })
+      });
 
-    const res = await fetch(`${this.baseURL}/api/public/products?${params}`, {
-      next: { revalidate: 60 } as any,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'force-cache'
-    });
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({ error: 'Failed to fetch products' }));
-      throw new Error(error.error || 'Failed to fetch products');
+      const url = `${this.baseURL}/api/public/products?${params}`;
+      console.log('[API] Fetching products:', url);
+
+      const res = await fetch(url, {
+        next: { revalidate: 60 } as any,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'force-cache'
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[API] Products fetch failed:', res.status, errorText);
+        const error = errorText ? JSON.parse(errorText) : { error: 'Failed to fetch products' };
+        throw new Error(error.error || `Failed to fetch products (${res.status})`);
+      }
+      
+      const data = await res.json();
+      console.log('[API] Products fetched successfully:', data.data?.length || 0, 'items');
+      return data;
+    } catch (error) {
+      console.error('[API] Error fetching products:', companySlug, error);
+      throw error;
     }
-    return res.json();
   }
 
   async getProduct(slug: string, companySlug: string): Promise<Product & { relatedProducts: Product[] }> {

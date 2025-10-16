@@ -3,6 +3,12 @@ import { api } from '@/lib/api/client';
 import { Navigation } from '@/components/layout/Navigation';
 import { Footer } from '@/components/layout/Footer';
 
+// Enable dynamic params to allow runtime generation of pages
+export const dynamicParams = true;
+
+// Revalidate every 60 seconds
+export const revalidate = 60;
+
 export default async function CompanyLayout({
   children,
   params,
@@ -20,7 +26,8 @@ export default async function CompanyLayout({
         <Footer company={company} companySlug={params.company} />
       </div>
     );
-  } catch {
+  } catch (error) {
+    console.error('Error loading company:', params.company, error);
     notFound();
   }
 }

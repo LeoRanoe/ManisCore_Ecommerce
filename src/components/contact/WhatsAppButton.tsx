@@ -9,7 +9,9 @@ export function WhatsAppButton({
   message?: string;
   className?: string;
 }) {
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  // Clean phone number - remove spaces, dashes, parentheses, and plus sign
+  const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, '');
+  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 
   return (
     <a

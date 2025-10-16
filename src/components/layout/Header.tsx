@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, Menu, X, User, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SearchBar } from '../ui/SearchBar';
+import { SearchBarWithAutocomplete } from '@/components/search/SearchBarWithAutocomplete';
 import { useCart } from '@/contexts/CartContext';
 
 interface HeaderProps {
@@ -143,7 +143,11 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
           {/* Desktop Search Bar */}
           {isSearchOpen && (
             <div className="hidden md:block py-4 border-t animate-slide-in-from-top">
-              <SearchBar companySlug={companySlug} onClose={() => setIsSearchOpen(false)} />
+              <SearchBarWithAutocomplete 
+                companySlug={companySlug} 
+                onClose={() => setIsSearchOpen(false)}
+                autoFocus
+              />
             </div>
           )}
         </div>
@@ -206,7 +210,7 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
 
             {/* Mobile Search */}
             <div className="p-4 border-t mt-auto">
-              <SearchBar companySlug={companySlug} />
+              <SearchBarWithAutocomplete companySlug={companySlug} />
             </div>
           </div>
         </div>

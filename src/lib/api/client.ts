@@ -57,10 +57,11 @@ class DashboardAPI {
 
   async getCompany(slug: string): Promise<Company> {
     const res = await fetch(`${this.baseURL}/api/public/companies/${slug}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 60 } as any,
       headers: {
         'Content-Type': 'application/json',
       },
+      cache: 'force-cache'
     });
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Company not found' }));
@@ -85,10 +86,11 @@ class DashboardAPI {
     });
 
     const res = await fetch(`${this.baseURL}/api/public/products?${params}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 60 } as any,
       headers: {
         'Content-Type': 'application/json',
       },
+      cache: 'force-cache'
     });
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Failed to fetch products' }));
@@ -101,10 +103,11 @@ class DashboardAPI {
     const res = await fetch(
       `${this.baseURL}/api/public/products/${slug}?companySlug=${companySlug}`,
       { 
-        next: { revalidate: 60 },
+        next: { revalidate: 60 } as any,
         headers: {
           'Content-Type': 'application/json',
         },
+        cache: 'force-cache'
       }
     );
     if (!res.ok) {

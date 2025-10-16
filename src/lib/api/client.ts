@@ -57,9 +57,15 @@ class DashboardAPI {
 
   async getCompany(slug: string): Promise<Company> {
     const res = await fetch(`${this.baseURL}/api/public/companies/${slug}`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 60 },
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    if (!res.ok) throw new Error('Company not found');
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Company not found' }));
+      throw new Error(error.error || 'Company not found');
+    }
     return res.json();
   }
 
@@ -79,18 +85,32 @@ class DashboardAPI {
     });
 
     const res = await fetch(`${this.baseURL}/api/public/products?${params}`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 60 },
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    if (!res.ok) throw new Error('Failed to fetch products');
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Failed to fetch products' }));
+      throw new Error(error.error || 'Failed to fetch products');
+    }
     return res.json();
   }
 
   async getProduct(slug: string, companySlug: string): Promise<Product & { relatedProducts: Product[] }> {
     const res = await fetch(
       `${this.baseURL}/api/public/products/${slug}?companySlug=${companySlug}`,
-      { next: { revalidate: 60 } }
+      { 
+        next: { revalidate: 60 },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
-    if (!res.ok) throw new Error('Product not found');
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Product not found' }));
+      throw new Error(error.error || 'Product not found');
+    }
     return res.json();
   }
 }

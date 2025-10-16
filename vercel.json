@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/:company",
+      "destination": "/:company"
+    },
+    {
+      "source": "/:company/:path*",
+      "destination": "/:company/:path*"
+    }
+  ]
+}

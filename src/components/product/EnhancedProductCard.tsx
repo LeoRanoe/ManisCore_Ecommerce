@@ -6,6 +6,7 @@ import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { useState } from 'react';
 import { cn, formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
+import { useCart } from '@/contexts/CartContext';
 
 interface Product {
   id: string;
@@ -36,6 +37,7 @@ export function EnhancedProductCard({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { addItem } = useCart();
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,8 +47,17 @@ export function EnhancedProductCard({
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
-    // TODO: Connect to cart API
-    console.log('Quick add:', product.id);
+    if (product.quantityInStock && product.quantityInStock > 0) {
+      addItem({
+        id: `${product.id}-${Date.now()}`,
+        productId: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.sellingPriceSRD,
+        imageUrl: product.imageUrls[0],
+        maxStock: product.quantityInStock,
+      });
+    }
   };
 
   const imageUrl = product.imageUrls[currentImageIndex] || product.imageUrls[0] || '/placeholder-product.jpg';

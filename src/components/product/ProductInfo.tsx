@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { Star, ShoppingCart, Heart, Share2, Check, Truck, Shield, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { useCart } from '@/contexts/CartContext';
 import { cn } from '@/lib/utils';
 
 interface ProductInfoProps {
   product: {
     id: string;
     name: string;
+    slug: string;
     shortDescription?: string;
     description?: string;
     sellingPriceSRD: number;
@@ -17,6 +19,7 @@ interface ProductInfoProps {
     isFeatured: boolean;
     tags: string[];
     specifications?: Record<string, string>;
+    imageUrls: string[];
   };
   companySlug: string;
 }
@@ -24,6 +27,7 @@ interface ProductInfoProps {
 export function ProductInfo({ product, companySlug }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addItem } = useCart();
 
   const isInStock = product.quantityInStock > 0;
   const isLowStock = product.quantityInStock > 0 && product.quantityInStock <= 5;
@@ -35,8 +39,16 @@ export function ProductInfo({ product, companySlug }: ProductInfoProps) {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log('Add to cart:', { productId: product.id, quantity });
+    addItem({
+      id: `${product.id}-${Date.now()}`,
+      productId: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.sellingPriceSRD,
+      imageUrl: product.imageUrls[0],
+      maxStock: product.quantityInStock,
+      quantity,
+    });
   };
 
   const handleShare = async () => {

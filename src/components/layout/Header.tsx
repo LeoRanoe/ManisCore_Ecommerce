@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, Menu, X, User, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SearchBar } from '../ui/SearchBar';
+import { useCart } from '@/contexts/CartContext';
 
 interface HeaderProps {
   companySlug: string;
@@ -17,6 +18,7 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { itemCount, openCart } = useCart();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -100,17 +102,19 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
               </Link>
 
               {/* Cart */}
-              <Link
-                href={`/${companySlug}/cart`}
+              <button
+                onClick={openCart}
                 className="relative flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent transition-colors"
                 aria-label="Shopping Cart"
               >
                 <ShoppingCart className="h-5 w-5" />
-                {/* Cart count badge - you can connect to state */}
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold">
-                  0
-                </span>
-              </Link>
+                {/* Cart count badge */}
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold">
+                    {itemCount > 99 ? '99+' : itemCount}
+                  </span>
+                )}
+              </button>
 
               {/* Account */}
               <Link

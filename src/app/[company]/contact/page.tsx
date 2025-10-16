@@ -14,7 +14,7 @@ export default async function ContactPage({ params }: { params: { company: strin
           <div>
             <h2 className="text-2xl font-semibold mb-4">Get in Touch</h2>
             <p className="text-muted-foreground mb-6">
-              Have questions about our products? We'd love to hear from you!
+              Have questions about our products? We&apos;d love to hear from you!
             </p>
           </div>
 

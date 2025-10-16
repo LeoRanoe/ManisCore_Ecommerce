@@ -109,6 +109,28 @@ export interface Testimonial {
   order: number;
 }
 
+export interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  parentId?: string;
+  order: number;
+  isPublic: boolean;
+  itemCount?: number;
+}
+
+export interface ProductFilters {
+  search?: string;
+  tags?: string[];
+  isFeatured?: boolean;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: 'newest' | 'price-asc' | 'price-desc' | 'name' | 'featured';
+}
+
 class DashboardAPI {
   private baseURL: string;
 
@@ -149,7 +171,7 @@ class DashboardAPI {
     companySlug: string,
     page = 1,
     limit = 20,
-    filters: { search?: string; tags?: string[]; isFeatured?: boolean } = {}
+    filters: ProductFilters = {}
   ): Promise<PaginatedResponse<Product>> {
     try {
       const params = new URLSearchParams({
@@ -158,7 +180,11 @@ class DashboardAPI {
         limit: String(limit),
         ...(filters.search && { search: filters.search }),
         ...(filters.tags && { tags: filters.tags.join(',') }),
-        ...(filters.isFeatured !== undefined && { isFeatured: String(filters.isFeatured) })
+        ...(filters.isFeatured !== undefined && { isFeatured: String(filters.isFeatured) }),
+        ...(filters.category && { category: filters.category }),
+        ...(filters.minPrice !== undefined && { minPrice: String(filters.minPrice) }),
+        ...(filters.maxPrice !== undefined && { maxPrice: String(filters.maxPrice) }),
+        ...(filters.sortBy && { sortBy: filters.sortBy })
       });
 
       const url = `${this.baseURL}/api/public/products?${params}`;
@@ -288,6 +314,20 @@ class DashboardAPI {
     });
 
     const res = await fetch(`${this.baseURL}/api/public/testimonials?${params}`, {
+      next: { revalidate: 300 } as any,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!res.ok) {
+      return { data: [] };
+    }
+    return res.json();
+  }
+
+  async getCategories(companySlug: string): Promise<{ data: Category[] }> {
+    const params = new URLSearchParams({ companySlug });
+
+    const res = await fetch(`${this.baseURL}/api/public/categories?${params}`, {
       next: { revalidate: 300 } as any,
       headers: { 'Content-Type': 'application/json' }
     });

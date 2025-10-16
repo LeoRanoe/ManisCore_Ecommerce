@@ -1,92 +1,114 @@
-﻿import { api } from '@/lib/api/client';
-import { ProductGrid } from '@/components/catalog/ProductGrid';
-import { Package, Sparkles } from 'lucide-react';
+﻿import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import { api } from '@/lib/api/client';
+import { ProductListing } from '@/components/catalog/ProductListing';
+import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 
-export default async function ProductsPage({
-  params,
-  searchParams,
-}: {
-  params: { company: string };
-  searchParams: { page?: string; search?: string };
-}) {
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search;
+interface PageProps {
+  params: {
+    company: string;
+  };
+  searchParams: {
+    category?: string;
+    tags?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    sortBy?: string;
+    page?: string;
+    search?: string;
+  };
+}
 
-  const company = await api.getCompany(params.company);
-  const { data: products, pagination } = await api.getProducts(
-    params.company,
-    page,
-    20,
-    { search }
-  );
+async function getProductData(companySlug: string, searchParams: PageProps['searchParams']) {
+  try {
+    const page = parseInt(searchParams.page || '1');
+    const limit = 12;
 
-  const allTags = Array.from(
-    new Set(products.flatMap(p => p.tags))
-  ).sort();
+    // Fetch products with filters
+    const productsData = await api.getProducts(companySlug, page, limit, {
+      category: searchParams.category,
+      tags: searchParams.tags?.split(',').filter(Boolean),
+      minPrice: searchParams.minPrice ? parseFloat(searchParams.minPrice) : undefined,
+      maxPrice: searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : undefined,
+      sortBy: searchParams.sortBy as any,
+      search: searchParams.search,
+    });
+
+    // Fetch categories
+    const categoriesResponse = await api.getCategories(companySlug);
+
+    // Calculate price range from all products (for filter sidebar)
+    const allProductsData = await api.getProducts(companySlug, 1, 1000);
+    const prices = allProductsData.data
+      .map((p: any) => p.sellingPriceSRD)
+      .filter((price: any): price is number => typeof price === 'number');
+    
+    const priceRange = {
+      min: prices.length > 0 ? Math.floor(Math.min(...prices)) : 0,
+      max: prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000,
+    };
+
+    return {
+      products: productsData.data,
+      categories: categoriesResponse.data,
+      pagination: productsData.pagination,
+      priceRange,
+    };
+  } catch (error) {
+    console.error('Failed to fetch product data:', error);
+    return null;
+  }
+}
+
+export default async function ProductsPage({ params, searchParams }: PageProps) {
+  const data = await getProductData(params.company, searchParams);
+
+  if (!data) {
+    notFound();
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Modern Header with Gradient Background */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-16 sm:py-20 md:py-24 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-            backgroundSize: '32px 32px'
-          }}></div>
-        </div>
-
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Product Catalog</span>
-            </div>
-            
-            {/* Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
-              <span className="block">Explore Our</span>
-              <span className="block bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
-                Premium Products
-              </span>
-            </h1>
-            
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
-              Browse through our complete collection of quality products tailored for you
+    <div className="min-h-screen bg-background">
+      {/* Page Header */}
+      <div className="bg-muted border-b">
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3">Our Products</h1>
+            <p className="text-lg text-muted-foreground">
+              Discover our curated selection of premium products
             </p>
-
-            {/* Stats */}
-            <div className="flex items-center justify-center gap-8 mt-10 flex-wrap">
-              <div className="text-center">
-                <div className="text-3xl sm:text-4xl font-black text-white">{pagination.total}</div>
-                <div className="text-sm text-gray-400 uppercase tracking-wider">Products</div>
-              </div>
-              <div className="w-px h-12 bg-white/20"></div>
-              <div className="text-center">
-                <div className="text-3xl sm:text-4xl font-black text-white">{allTags.length}</div>
-                <div className="text-sm text-gray-400 uppercase tracking-wider">Categories</div>
-              </div>
-            </div>
           </div>
         </div>
+      </div>
 
-        {/* Wave Divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="w-full h-8 sm:h-12" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M0,0 C300,50 900,50 1200,0 L1200,120 L0,120 Z" fill="rgb(249, 250, 251)" opacity="1"></path>
-          </svg>
-        </div>
-      </section>
-
-      {/* Products Grid Section */}
-      <section className="container mx-auto px-4 py-12 sm:py-16">
-        <ProductGrid
-          products={products}
+      {/* Product Listing */}
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(12)].map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+        }
+      >
+        <ProductListing
+          initialProducts={data.products}
+          categories={data.categories}
           companySlug={params.company}
-          allTags={allTags}
+          pagination={data.pagination}
+          priceRange={data.priceRange}
         />
-      </section>
+      </Suspense>
     </div>
   );
+}
+
+// Generate metadata
+export async function generateMetadata({ params }: PageProps) {
+  return {
+    title: `Products | ${params.company}`,
+    description: 'Browse our complete product catalog',
+  };
 }

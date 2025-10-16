@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { api } from '@/lib/api/client';
-import { Navigation } from '@/components/layout/Navigation';
+import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
 // Enable dynamic params to allow runtime generation of pages
@@ -21,7 +21,11 @@ export default async function CompanyLayout({
 
     return (
       <div className="min-h-screen flex flex-col">
-        <Navigation company={company} companySlug={params.company} />
+        <Header 
+          companySlug={params.company} 
+          companyName={company.name}
+          logoUrl={company.logoUrl || undefined}
+        />
         <main className="flex-1">{children}</main>
         <Footer company={company} companySlug={params.company} />
       </div>

@@ -46,7 +46,6 @@ export default async function ProductsPage({
       <section className="container mx-auto px-4 py-12">
         <ProductGrid
           products={products}
-          pagination={pagination}
           companySlug={params.company}
           allTags={allTags}
         />

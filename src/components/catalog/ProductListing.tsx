@@ -206,7 +206,7 @@ export function ProductListing({
               </div>
               <h3 className="text-xl font-semibold mb-2">No products found</h3>
               <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                We couldn't find any products matching your criteria. Try adjusting your filters.
+                We couldn&apos;t find any products matching your criteria. Try adjusting your filters.
               </p>
               <button
                 onClick={handleClearFilters}

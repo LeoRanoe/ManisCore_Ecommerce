@@ -54,6 +54,7 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
             {/* Logo */}
             <Link href={`/${companySlug}`} className="flex items-center space-x-2">
               {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt={companyName} className="h-8 w-auto" />
               ) : (
                 <span className="text-xl font-bold">{companyName}</span>

@@ -32,7 +32,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">What Our Customers Say</h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Don't just take our word for it - hear from some of our satisfied customers
+            Don&apos;t just take our word for it - hear from some of our satisfied customers
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
 
               {/* Content */}
               <p className="text-foreground leading-relaxed mb-6 relative z-10">
-                "{testimonial.content}"
+                &ldquo;{testimonial.content}&rdquo;
               </p>
 
               {/* Author */}

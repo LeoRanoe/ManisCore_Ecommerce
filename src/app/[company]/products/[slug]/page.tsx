@@ -4,6 +4,8 @@ import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { YouTubeEmbed } from '@/components/product/YouTubeEmbed';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { ImageGallery } from '@/components/product/ImageGallery';
+import { ReviewsList } from '@/components/reviews/ReviewsList';
+import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { Badge } from '@/components/ui/Badge';
@@ -33,6 +35,12 @@ export default async function ProductDetailPage({
     const product = await api.getProduct(params.slug, params.company);
     const company = await api.getCompany(params.company);
     const inStock = product.status === 'Arrived' && product.quantityInStock > 0;
+    
+    // Fetch real reviews for this product
+    const reviewsData = await api.getReviews(params.company, product.slug);
+    const reviews = reviewsData.data || [];
+    const avgRating = reviewsData.averageRating || 0;
+    const totalReviews = reviews.length;
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -85,15 +93,20 @@ export default async function ProductDetailPage({
               </div>
 
               {/* Rating */}
-              <div className="flex items-center gap-3 pb-4 border-b border-border">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-5 h-5 fill-amber-400 text-amber-400" />
-                  ))}
+              {totalReviews > 0 && (
+                <div className="flex items-center gap-3 pb-4 border-b border-border">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star 
+                        key={star} 
+                        className={`w-5 h-5 ${star <= Math.round(avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} 
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted-foreground">({avgRating.toFixed(1)} out of 5)</span>
+                  <span className="text-sm text-muted-foreground">{totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}</span>
                 </div>
-                <span className="text-sm text-muted-foreground">(4.5 out of 5)</span>
-                <span className="text-sm text-primary hover:underline cursor-pointer">32 reviews</span>
-              </div>
+              )}
 
               {/* Price */}
               <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/20 rounded-2xl p-6">
@@ -127,7 +140,7 @@ export default async function ProductDetailPage({
               </div>
 
               {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border">
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border">
                 <div className="text-center">
                   <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-primary/10 flex items-center justify-center">
                     <ShieldCheck className="w-6 h-6 text-primary" />
@@ -139,12 +152,6 @@ export default async function ProductDetailPage({
                     <Truck className="w-6 h-6 text-emerald-600" />
                   </div>
                   <p className="text-xs font-medium">Fast Delivery</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <p className="text-xs font-medium">24/7 Support</p>
                 </div>
               </div>
             </div>
@@ -188,7 +195,7 @@ export default async function ProductDetailPage({
           {/* YouTube Reviews */}
           {product.youtubeReviewUrls && product.youtubeReviewUrls.length > 0 && (
             <section className="mb-16">
-              <h2 className="text-3xl font-bold mb-6">Product Reviews</h2>
+              <h2 className="text-3xl font-bold mb-6">Video Reviews</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 {product.youtubeReviewUrls.map((url, i) => (
                   <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -198,6 +205,48 @@ export default async function ProductDetailPage({
               </div>
             </section>
           )}
+
+          {/* Customer Reviews Section */}
+          <section className="mb-16">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-3xl font-bold mb-2">Customer Reviews</h2>
+                {totalReviews > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-5 h-5 ${
+                            star <= Math.round(avgRating)
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-lg font-semibold">{avgRating.toFixed(1)}</span>
+                    <span className="text-muted-foreground">({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Review Form */}
+              <div className="lg:col-span-1">
+                <ReviewForm 
+                  companySlug={params.company} 
+                  productSlug={product.slug}
+                />
+              </div>
+
+              {/* Reviews List */}
+              <div className="lg:col-span-2">
+                <ReviewsList reviews={reviews} />
+              </div>
+            </div>
+          </section>
 
           {/* Related Products */}
           {product.relatedProducts && product.relatedProducts.length > 0 && (

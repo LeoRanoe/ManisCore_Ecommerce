@@ -18,6 +18,19 @@ export interface Company {
     secondaryColor?: string;
     accentColor?: string;
   };
+  // Ecommerce fields
+  businessHours?: Record<string, string>;
+  whatsappGreeting?: string;
+  aboutUs?: string;
+  shippingPolicy?: string;
+  returnPolicy?: string;
+  warrantyInfo?: string;
+  termsOfService?: string;
+  privacyPolicy?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string[];
 }
 
 export interface Product {
@@ -46,6 +59,54 @@ export interface PaginatedResponse<T> {
     total: number;
     totalPages: number;
   };
+}
+
+export interface Review {
+  id: string;
+  rating: number;
+  title?: string;
+  comment?: string;
+  reviewerName: string;
+  isVerified: boolean;
+  createdAt: string;
+  item?: {
+    slug: string;
+    name: string;
+  };
+}
+
+export interface ReviewsResponse extends PaginatedResponse<Review> {
+  averageRating?: number | null;
+}
+
+export interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order: number;
+}
+
+export interface Banner {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  linkUrl?: string;
+  linkText?: string;
+  position: string;
+  order: number;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role?: string;
+  content: string;
+  imageUrl?: string;
+  rating?: number;
+  isFeatured: boolean;
+  order: number;
 }
 
 class DashboardAPI {
@@ -116,6 +177,113 @@ class DashboardAPI {
     }
     return res.json();
   }
+
+  async getReviews(
+    companySlug: string,
+    itemSlug?: string,
+    page = 1,
+    limit = 10
+  ): Promise<ReviewsResponse> {
+    const params = new URLSearchParams({
+      companySlug,
+      page: String(page),
+      limit: String(limit),
+      ...(itemSlug && { itemSlug })
+    });
+
+    const res = await fetch(`${this.baseURL}/api/public/reviews?${params}`, {
+      next: { revalidate: 30 } as any,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!res.ok) {
+      return { data: [], pagination: { page, limit, total: 0, totalPages: 0 }, averageRating: null };
+    }
+    return res.json();
+  }
+
+  async submitReview(data: {
+    itemSlug: string;
+    companySlug: string;
+    rating: number;
+    title?: string;
+    comment?: string;
+    reviewerName: string;
+    reviewerEmail?: string;
+  }): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${this.baseURL}/api/public/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  }
+
+  async getFAQs(companySlug: string, category?: string): Promise<{ data: FAQ[]; grouped: Record<string, FAQ[]> }> {
+    const params = new URLSearchParams({
+      companySlug,
+      ...(category && { category })
+    });
+
+    const res = await fetch(`${this.baseURL}/api/public/faqs?${params}`, {
+      next: { revalidate: 300 } as any,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!res.ok) {
+      return { data: [], grouped: {} };
+    }
+    return res.json();
+  }
+
+  async getBanners(companySlug: string, position?: string): Promise<{ data: Banner[] }> {
+    const params = new URLSearchParams({
+      companySlug,
+      ...(position && { position })
+    });
+
+    const res = await fetch(`${this.baseURL}/api/public/banners?${params}`, {
+      next: { revalidate: 60 } as any,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!res.ok) {
+      return { data: [] };
+    }
+    return res.json();
+  }
+
+  async getTestimonials(companySlug: string, featured = false): Promise<{ data: Testimonial[] }> {
+    const params = new URLSearchParams({
+      companySlug,
+      ...(featured && { featured: 'true' })
+    });
+
+    const res = await fetch(`${this.baseURL}/api/public/testimonials?${params}`, {
+      next: { revalidate: 300 } as any,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!res.ok) {
+      return { data: [] };
+    }
+    return res.json();
+  }
+
+  async subscribeNewsletter(data: {
+    email: string;
+    name?: string;
+    companySlug: string;
+    source?: string;
+  }): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${this.baseURL}/api/public/newsletter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  }
 }
 
 export const api = new DashboardAPI();
+

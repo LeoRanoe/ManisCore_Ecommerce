@@ -1,36 +1,37 @@
 # 🛍️ ManisCore E-Commerce Platform
 
-A modern, premium e-commerce platform built with Next.js 14, TypeScript, and Tailwind CSS. Features multi-company support, dynamic product catalogs, WhatsApp integration, and beautiful responsive design.
+A clean, professional e-commerce platform built with Next.js 14, TypeScript, and Tailwind CSS. Features multi-company support, dynamic product catalogs, WhatsApp integration, and modern black & white design.
 
 ## ✨ Features
 
 - 🏢 **Multi-Company Support** - Host multiple storefronts on one platform
-- 🛒 **Product Catalog** - Beautiful product cards with filtering and search
+- 🛒 **Product Catalog** - Clean product cards with filtering and search
 - 📱 **WhatsApp Integration** - Direct customer communication
-- 🎨 **Premium UI/UX** - Modern design with smooth animations
+- 🎨 **Professional UI/UX** - Clean black & white minimalist design
 - 📱 **Fully Responsive** - Works perfectly on all devices
 - ⚡ **Fast Performance** - Built with Next.js 14 App Router
 - 🔍 **SEO Optimized** - Server-side rendering for better SEO
-- 🎥 **YouTube Reviews** - Embed product review videos
+- 🖼️ **Image Optimization** - Next.js Image component for fast loading
+- 📊 **Real-time Stock** - Connected to dashboard for live inventory
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ installed
-- npm or yarn package manager
+- pnpm package manager (`npm install -g pnpm`)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/LeoRanoe/ManisCore_Ecommerce.git
 cd ManisCore_Ecommerce
 ```
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Set up environment variables:
@@ -43,7 +44,7 @@ NEXT_PUBLIC_DEFAULT_COMPANY=nextx
 
 4. Run the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 5. Open [http://localhost:3001/nextx](http://localhost:3001/nextx) in your browser.
@@ -100,34 +101,50 @@ Edit `src/app/globals.css` to customize colors:
 
 ## 🚀 Deployment
 
-### Deploy to Vercel
+### Automatic Deployment (Recommended)
+
+This repository is connected to Vercel for automatic deployments:
+1. Push to `master` branch
+2. Vercel automatically builds and deploys
+3. Live in 2-3 minutes!
+
+### Manual Deployment
 
 1. Install Vercel CLI:
 ```bash
-npm i -g vercel
+pnpm add -g vercel
 ```
 
-2. Login to Vercel:
+2. Deploy:
 ```bash
-vercel login
+vercel --prod
 ```
 
-3. Deploy:
-```bash
-vercel
-```
+### Environment Variables
 
-4. Set environment variables in Vercel dashboard:
-- `NEXT_PUBLIC_DASHBOARD_API_URL` - Your dashboard API URL
-- `NEXT_PUBLIC_SITE_URL` - Your production site URL
-- `NEXT_PUBLIC_DEFAULT_COMPANY` - Default company slug
+Set these in your Vercel dashboard (Settings → Environment Variables):
+
+**Production:**
+```env
+NEXT_PUBLIC_DASHBOARD_API_URL=https://manis-core-dashboard.vercel.app
+NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_DEFAULT_COMPANY=next-x
+```
 
 ### Build for Production
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
+
+## 📚 Documentation
+
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
+- **[Final Summary](./FINAL_SUMMARY.md)** - Project completion summary
+- **[Quick Start Guide](./QUICK_START_GUIDE.md)** - Getting started guide
+- **[Visual Changes](./VISUAL_CHANGES.md)** - Design documentation
+- **[Redesign Summary](./REDESIGN_SUMMARY.md)** - Full redesign details
 
 ## 🛠️ Tech Stack
 
@@ -136,8 +153,8 @@ npm start
 - **Styling:** Tailwind CSS
 - **Icons:** Lucide React
 - **Image Optimization:** Next.js Image
-- **Data Fetching:** SWR
-- **Form Handling:** React Hook Form + Zod
+- **Package Manager:** pnpm
+- **Deployment:** Vercel
 
 ## 📦 Key Dependencies
 
@@ -146,10 +163,15 @@ npm start
 - `typescript` - Type safety
 - `tailwindcss` - Utility-first CSS
 - `lucide-react` - Beautiful icons
-- `swr` - Data fetching
-- `embla-carousel-react` - Touch-friendly carousels
-- `react-hook-form` - Form management
-- `zod` - Schema validation
+- `clsx` & `tailwind-merge` - Class name utilities
+
+## 🎨 Design Philosophy
+
+- **Minimalist** - Clean black & white theme
+- **Professional** - No AI-generated look
+- **Fast** - Optimized performance
+- **Functional** - Every element has purpose
+- **Responsive** - Mobile-first design
 
 ## 🤝 Contributing
 
@@ -174,8 +196,10 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-For support, email support@maniscore.com or message us on WhatsApp.
+For support, contact via WhatsApp through the platform.
 
 ---
 
-**Built with ❤️ using Next.js and TypeScript**
+**Built with ❤️ using Next.js, TypeScript, and Tailwind CSS**
+
+**Status:** ✅ Production Ready | 🚀 Deployed | 📱 Responsive

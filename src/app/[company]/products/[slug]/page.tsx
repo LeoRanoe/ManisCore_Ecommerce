@@ -2,7 +2,9 @@
 import { api } from '@/lib/api/client';
 import { ImageGallery } from '@/components/product/ImageGallery';
 import { ProductInfo } from '@/components/product/ProductInfo';
+import { ProductViewTracker } from '@/components/product/ProductViewTracker';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
+import { RecentlyViewed } from '@/components/product/RecentlyViewed';
 import { ReviewsList } from '@/components/reviews/ReviewsList';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ChevronRight } from 'lucide-react';
@@ -16,6 +18,9 @@ export default async function ProductDetailPage({ params }: { params: { company:
 
     return (
       <div className="min-h-screen bg-background">
+        {/* Track product view */}
+        <ProductViewTracker product={product} />
+        
         <div className="container mx-auto px-4 py-6">
           <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <a href={`/`} className="hover:text-foreground transition-colors">Home</a>
@@ -43,6 +48,10 @@ export default async function ProductDetailPage({ params }: { params: { company:
               </div>
             </div>
           </div>
+          
+          {/* Recently Viewed Products */}
+          <RecentlyViewed companySlug={params.company} currentProductId={product.id} />
+          
           {product.relatedProducts && product.relatedProducts.length > 0 && (
             <RelatedProducts products={product.relatedProducts} companySlug={params.company} />
           )}

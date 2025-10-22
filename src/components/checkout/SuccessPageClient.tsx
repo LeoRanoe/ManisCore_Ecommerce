@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/ui/Card';
 import { CheckCircle, Package, Mail, Phone, MapPin, ShoppingBag, Home, MessageCircle } from 'lucide-react';
 
 interface OrderDetails {

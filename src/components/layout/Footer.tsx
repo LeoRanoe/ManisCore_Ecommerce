@@ -140,10 +140,10 @@ export const Footer: React.FC<FooterProps> = ({ company, companySlug }) => {
               © {currentYear} {company.name}. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <Link href={`/${companySlug}/about`} className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link href={`/${companySlug}/privacy-policy`} className="text-sm text-gray-400 hover:text-white transition-colors">
                 Privacy Policy
               </Link>
-              <Link href={`/${companySlug}/contact`} className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link href={`/${companySlug}/terms-conditions`} className="text-sm text-gray-400 hover:text-white transition-colors">
                 Terms of Service
               </Link>
             </div>

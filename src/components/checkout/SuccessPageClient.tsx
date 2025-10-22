@@ -75,7 +75,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Order Placed Successfully!</h1>
           <p className="text-muted-foreground text-lg">
-            Thank you for your order. We'll contact you shortly via WhatsApp.
+            Thank you for your order. We&apos;ll contact you shortly via WhatsApp.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
           </div>
         </Card>
 
-        {/* What's Next */}
+        {/* What&apos;s Next */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-primary" />
@@ -111,7 +111,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
               <div>
                 <h3 className="font-medium mb-1">WhatsApp Confirmation</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your order details have been sent to our WhatsApp. We'll review and confirm your order shortly.
+                  Your order details have been sent to our WhatsApp. We&apos;ll review and confirm your order shortly.
                 </p>
               </div>
             </div>
@@ -122,7 +122,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
               <div>
                 <h3 className="font-medium mb-1">Payment Instructions</h3>
                 <p className="text-sm text-muted-foreground">
-                  We'll send you payment details and instructions via WhatsApp once your order is confirmed.
+                  We&apos;ll send you payment details and instructions via WhatsApp once your order is confirmed.
                 </p>
               </div>
             </div>
@@ -133,7 +133,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
               <div>
                 <h3 className="font-medium mb-1">Order Processing</h3>
                 <p className="text-sm text-muted-foreground">
-                  After payment confirmation, we'll prepare your order for delivery.
+                  After payment confirmation, we&apos;ll prepare your order for delivery.
                 </p>
               </div>
             </div>
@@ -144,7 +144,7 @@ export function SuccessPageClient({ companySlug, companyName, companyEmail, comp
               <div>
                 <h3 className="font-medium mb-1">Delivery</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your order will be delivered to your address. We'll keep you updated throughout the process.
+                  Your order will be delivered to your address. We&apos;ll keep you updated throughout the process.
                 </p>
               </div>
             </div>

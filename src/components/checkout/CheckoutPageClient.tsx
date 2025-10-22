@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useCart } from '@/components/cart/CartDrawer';
+import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -22,6 +22,17 @@ interface CheckoutFormData {
   acceptTerms: boolean;
 }
 
+interface CheckoutFormErrors {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  notes?: string;
+  acceptTerms?: string;
+}
+
 interface CheckoutPageClientProps {
   companySlug: string;
   companyName: string;
@@ -30,7 +41,7 @@ interface CheckoutPageClientProps {
 
 export function CheckoutPageClient({ companySlug, companyName, companyPhone }: CheckoutPageClientProps) {
   const router = useRouter();
-  const { items, getTotalPrice, clearCart } = useCart();
+  const { items, subtotal, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: '',
@@ -42,7 +53,7 @@ export function CheckoutPageClient({ companySlug, companyName, companyPhone }: C
     notes: '',
     acceptTerms: false,
   });
-  const [errors, setErrors] = useState<Partial<CheckoutFormData>>({});
+  const [errors, setErrors] = useState<CheckoutFormErrors>({});
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -51,13 +62,12 @@ export function CheckoutPageClient({ companySlug, companyName, companyPhone }: C
     }
   }, [items, router, companySlug]);
 
-  const subtotal = getTotalPrice();
   const tax = subtotal * 0.1; // 10% tax
   const shipping = subtotal >= 500 ? 0 : 50; // Free shipping over SRD 500
   const total = subtotal + tax + shipping;
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<CheckoutFormData> = {};
+    const newErrors: CheckoutFormErrors = {};
 
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.email.trim()) {
@@ -289,7 +299,7 @@ export function CheckoutPageClient({ companySlug, companyName, companyPhone }: C
                 </div>
                 <div className="bg-muted/30 p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">
-                    Your order will be sent via WhatsApp. We'll provide payment instructions after confirming your order details.
+                    Your order will be sent via WhatsApp. We&apos;ll provide payment instructions after confirming your order details.
                   </p>
                   <div className="flex items-center gap-2 mt-3 text-sm font-medium">
                     <MessageCircle className="h-4 w-4 text-green-600" />
@@ -349,8 +359,8 @@ export function CheckoutPageClient({ companySlug, companyName, companyPhone }: C
                   {items.map((item) => (
                     <div key={item.id} className="flex gap-3">
                       <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center text-xs text-muted-foreground overflow-hidden">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
                           'No image'
                         )}

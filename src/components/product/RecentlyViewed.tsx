@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/ui/Card';
 import { Eye } from 'lucide-react';
 
 interface RecentlyViewedProduct {

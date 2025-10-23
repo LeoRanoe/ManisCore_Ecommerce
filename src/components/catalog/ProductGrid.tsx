@@ -7,6 +7,8 @@ import { SearchBar } from '../ui/SearchBar';
 import { Badge } from '../ui/Badge';
 import { Grid, List, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { StaggerContainer, StaggerItem } from '../ui/ScrollReveal';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface ProductGridProps {
   products: Product[];
@@ -245,30 +247,51 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, companySlug,
 
       {/* Products Grid/List */}
       {filteredProducts.length > 0 ? (
-        <div
+        <StaggerContainer
           className={
             viewMode === 'grid'
               ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
               : 'space-y-4'
           }
+          staggerDelay={0.05}
         >
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} companySlug={companySlug} />
-          ))}
-        </div>
+          <AnimatePresence mode="popLayout">
+            {filteredProducts.map((product) => (
+              <StaggerItem key={product.id}>
+                <ProductCard product={product} companySlug={companySlug} />
+              </StaggerItem>
+            ))}
+          </AnimatePresence>
+        </StaggerContainer>
       ) : (
-        <div className="text-center py-16">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-center py-16"
+        >
+          <motion.div 
+            animate={{ 
+              rotate: [0, -10, 10, -10, 0],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              repeatDelay: 3
+            }}
+            className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center"
+          >
             <svg className="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-          </div>
+          </motion.div>
           <h3 className="text-xl font-bold mb-2">No products found</h3>
           <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
           <Button onClick={clearFilters} variant="outline">
             Clear Filters
           </Button>
-        </div>
+        </motion.div>
       )}
     </div>
   );

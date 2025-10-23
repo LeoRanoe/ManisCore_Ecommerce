@@ -8,7 +8,13 @@
 # testing
 /coverage
 
-# next.js
+# Playwright test results
+/test-results/
+/playwright-report/
+/playwright/.cache/
+*.webm
+
+# typescript
 /.next/
 /out/
 

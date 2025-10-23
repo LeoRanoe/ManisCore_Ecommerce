@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingCart, Menu, X, User, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SearchBarWithAutocomplete } from '@/components/search/SearchBarWithAutocomplete';
@@ -102,19 +103,29 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
               </Link>
 
               {/* Cart */}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={openCart}
                 className="relative flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent transition-colors"
                 aria-label="Shopping Cart"
               >
                 <ShoppingCart className="h-5 w-5" />
                 {/* Cart count badge */}
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold">
-                    {itemCount > 99 ? '99+' : itemCount}
-                  </span>
-                )}
-              </button>
+                <AnimatePresence>
+                  {itemCount > 0 && (
+                    <motion.span 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold"
+                    >
+                      {itemCount > 99 ? '99+' : itemCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
 
               {/* Account */}
               <Link
@@ -141,54 +152,83 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
           </div>
 
           {/* Desktop Search Bar */}
-          {isSearchOpen && (
-            <div className="hidden md:block py-4 border-t animate-slide-in-from-top">
-              <SearchBarWithAutocomplete 
-                companySlug={companySlug} 
-                onClose={() => setIsSearchOpen(false)}
-                autoFocus
-              />
-            </div>
-          )}
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="hidden md:block overflow-hidden border-t"
+              >
+                <div className="py-4">
+                  <SearchBarWithAutocomplete 
+                    companySlug={companySlug} 
+                    onClose={() => setIsSearchOpen(false)}
+                    autoFocus
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-          {/* Menu Panel */}
-          <div className="absolute top-0 right-0 bottom-0 w-full max-w-sm bg-background shadow-lift-lg animate-slide-in-from-right">
-            <div className="flex items-center justify-between p-4 border-b">
-              <span className="font-semibold">Menu</span>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <nav className="flex flex-col p-4 space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'px-4 py-3 rounded-md text-sm font-medium transition-colors',
-                    pathname === link.href
-                      ? 'bg-accent text-foreground'
-                      : 'text-foreground/60 hover:bg-accent/50 hover:text-foreground'
-                  )}
+            {/* Menu Panel */}
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="absolute top-0 right-0 bottom-0 w-full max-w-sm bg-background shadow-2xl"
+            >
+              <div className="flex items-center justify-between p-4 border-b">
+                <span className="font-semibold">Menu</span>
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent transition-colors"
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  <X className="h-5 w-5" />
+                </motion.button>
+              </div>
+
+              <nav className="flex flex-col p-4 space-y-1">
+                {navLinks.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                  >
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        'block px-4 py-3 rounded-md text-sm font-medium transition-colors',
+                        pathname === link.href
+                          ? 'bg-accent text-foreground'
+                          : 'text-foreground/60 hover:bg-accent/50 hover:text-foreground'
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
 
               <div className="border-t pt-4 mt-4 space-y-1">
                 <Link
@@ -212,9 +252,10 @@ export function Header({ companySlug, companyName, logoUrl }: HeaderProps) {
             <div className="p-4 border-t mt-auto">
               <SearchBarWithAutocomplete companySlug={companySlug} />
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
+    </AnimatePresence>
     </>
   );
 }

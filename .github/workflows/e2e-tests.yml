@@ -1,0 +1,186 @@
+name: 🧪 E2E Tests - Playwright
+
+on:
+  push:
+    branches: [master, main, develop]
+  pull_request:
+    branches: [master, main, develop]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run E2E Tests
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit]
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🎭 Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
+
+      - name: 🔨 Build application
+        run: pnpm run build
+
+      - name: 🧪 Run Playwright tests
+        run: pnpm exec playwright test --project=${{ matrix.project }}
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3001' }}
+          TEST_COMPANY_SLUG: ${{ secrets.TEST_COMPANY_SLUG || 'test-company' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      - name: 📊 Generate Test Report
+        if: always()
+        run: node tests/helpers/generate-report.js
+        continue-on-error: true
+
+      - name: 📤 Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📤 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.project }}
+          path: test-results/
+          retention-days: 30
+
+      - name: 📤 Upload Screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots-${{ matrix.project }}
+          path: test-results/screenshots/
+          retention-days: 7
+
+      - name: 📤 Upload Videos
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: videos-${{ matrix.project }}
+          path: test-results/**/*.webm
+          retention-days: 7
+
+  report:
+    name: 📊 Test Summary
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: 📊 Display Test Summary
+        run: |
+          echo "## 🧪 E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "artifacts/test-results-chromium/TEST-SUMMARY.md" ]; then
+            cat artifacts/test-results-chromium/TEST-SUMMARY.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Test summary not available" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 💬 Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let summary = '## 🧪 E2E Test Results\n\n';
+            
+            try {
+              const summaryPath = 'artifacts/test-results-chromium/TEST-SUMMARY.md';
+              if (fs.existsSync(summaryPath)) {
+                summary += fs.readFileSync(summaryPath, 'utf8');
+              } else {
+                summary += '⚠️ Test summary not available';
+              }
+            } catch (error) {
+              summary += `❌ Error loading summary: ${error.message}`;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  mobile-test:
+    name: 📱 Mobile Tests
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ['Mobile Chrome', 'Mobile Safari']
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🎭 Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: 🔨 Build application
+        run: pnpm run build
+
+      - name: 📱 Run Mobile tests
+        run: pnpm exec playwright test --project="${{ matrix.device }}"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3001' }}
+          TEST_COMPANY_SLUG: ${{ secrets.TEST_COMPANY_SLUG || 'test-company' }}
+
+      - name: 📤 Upload Mobile Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-results-${{ matrix.device }}
+          path: test-results/
+          retention-days: 30

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Eye, X, Clock } from 'lucide-react';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { EnhancedImage } from '@/components/ui/EnhancedImage';
 
 interface RecentlyViewedProduct {
   id: string;
@@ -108,10 +109,12 @@ export function RecentlyViewed({ companySlug, currentProductId, maxItems = 4 }: 
                 <Card className="overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1">
                   <div className="aspect-square bg-muted relative overflow-hidden">
                     {product.image ? (
-                      <img
+                      <EnhancedImage
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">

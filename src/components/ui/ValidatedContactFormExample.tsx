@@ -43,7 +43,7 @@ export function ValidatedContactFormExample() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success('Message sent successfully!', {
-        description: 'We\'ll get back to you soon.',
+        description: 'We will get back to you soon.',
       });
 
       // Reset form

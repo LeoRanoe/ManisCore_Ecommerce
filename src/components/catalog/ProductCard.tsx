@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { EnhancedImage } from '@/components/ui/EnhancedImage';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
@@ -31,13 +31,12 @@ export function ProductCard({ product, companySlug }: { product: Product; compan
           {/* Image Container */}
           <div className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
             {product.imageUrls[0] ? (
-              <Image
+              <EnhancedImage
                 src={product.imageUrls[0]}
                 alt={product.name}
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">

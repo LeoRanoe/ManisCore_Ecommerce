@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { EnhancedImage } from '@/components/ui/EnhancedImage';
 import { Search, X, Clock, TrendingUp, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useSWR from 'swr';
@@ -237,7 +237,7 @@ export function SearchBarWithAutocomplete({
                       >
                         <div className="relative h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
                           {product.imageUrls[0] ? (
-                            <Image
+                            <EnhancedImage
                               src={product.imageUrls[0]}
                               alt={product.name}
                               fill

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { ProgressBarProvider } from "@/components/providers/ProgressBarProvider";
 import { Toaster } from "sonner";
@@ -16,15 +17,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <ProgressBarProvider>
-          {children}
-          <Toaster 
-            position="top-right"
-            richColors
-            closeButton
-            duration={3000}
-          />
-        </ProgressBarProvider>
+        <Suspense fallback={null}>
+          <ProgressBarProvider>
+            {children}
+            <Toaster 
+              position="top-right"
+              richColors
+              closeButton
+              duration={3000}
+            />
+          </ProgressBarProvider>
+        </Suspense>
       </body>
     </html>
   );

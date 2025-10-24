@@ -66,7 +66,7 @@ export function ValidatedContactFormExample() {
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Contact Us</h2>
         <p className="text-muted-foreground">
-          Fill out the form below and we'll get back to you as soon as possible.
+          Fill out the form below and we will get back to you as soon as possible.
         </p>
       </div>
 
@@ -89,7 +89,7 @@ export function ValidatedContactFormExample() {
           onChange={(value) => setFormData(prev => ({ ...prev, email: value }))}
           rules={emailRules}
           icon={<Mail className="h-5 w-5" />}
-          helperText="We'll never share your email"
+          helperText="We will never share your email"
         />
 
         <div className="relative">

@@ -1,5 +1,5 @@
-﻿import { api } from '@/lib/api/client';
-import { ProductCard } from '@/components/catalog/ProductCard';
+﻿import dynamic from 'next/dynamic';
+import { api } from '@/lib/api/client';
 import { WhatsAppButton } from '@/components/contact/WhatsAppButton';
 import { ScrollReveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { ParallaxHero } from '@/components/ui/ParallaxHero';
@@ -7,6 +7,11 @@ import { Package, Shield, Zap, Star, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { EnhancedImage } from '@/components/ui/EnhancedImage';
 import { notFound } from 'next/navigation';
+
+// Dynamically import heavy components with loading fallbacks
+const ProductCard = dynamic(() => import('@/components/catalog/ProductCard').then(mod => ({ default: mod.ProductCard })), {
+  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-96" />,
+});
 
 // Enable dynamic params to allow runtime generation of pages
 export const dynamicParams = true;

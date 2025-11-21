@@ -74,6 +74,14 @@ const config: Config = {
         'lift-lg': '0 8px 30px rgba(0, 0, 0, 0.12)',
         'inner-sm': 'inset 0 1px 2px rgba(0, 0, 0, 0.05)',
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'gradient-success': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+      },
       keyframes: {
         'fade-in': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
